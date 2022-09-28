@@ -13,8 +13,8 @@
 #define WPTN_4  2
 
 __global__ void gemm_kernel_NN(
-    const float* __restrict__ A,
-    const float* __restrict__ B,
+    float* __restrict__ A,
+    float* __restrict__ B,
     float4* __restrict__ C,
     float alpha, float beta,
     int M, int N, int K)
@@ -308,7 +308,7 @@ __global__ void gemm_kernel_NN(
 }
 
 void run_v2gemm(int M , int N , int K , 
-                const float* A , const float* B, float *C, float alpha , float beta){
+                float* A , float* B, float *C, float alpha , float beta){
                 
                 
     const int TILE_WIDTH = 128;

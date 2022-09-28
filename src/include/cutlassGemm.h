@@ -11,7 +11,7 @@ using CutlassGemm = cutlass::gemm::device::Gemm<float,        // A矩阵数据�
                                                 RowMajor>;
 
 void run_cutlass(int M , int N , int K , 
-                const float* A , const float* B, float *C, float alpha , float beta){
+                 float* A ,  float* B, float *C, float alpha , float beta){
 
     int lda = K;
     int ldb = K;

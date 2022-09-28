@@ -12,7 +12,7 @@
   #define int64_t long long
   #define uint64_t unsigned long long
 #endif
-extern "C" __global__ void __launch_bounds__(64) main_kernel0(const float* __restrict__ A,const float* __restrict__ B, float* __restrict__ C) {
+extern "C" __global__ void __launch_bounds__(64) main_kernel0( float* __restrict__ A, float* __restrict__ B, float* __restrict__ C) {
   float C_local[64];
   __shared__ float A_shared[2048];
   __shared__ float B_shared[2048];
@@ -258,7 +258,7 @@ extern "C" __global__ void __launch_bounds__(64) main_kernel0(const float* __res
 
 
 void run_tvm(int M , int N , int K , 
-                const float* A , const float* B, float *C, float alpha , float beta){
+                 float* A ,  float* B, float *C, float alpha , float beta){
             
 
     main_kernel0<<<256,64>>>(A,B,C) ;

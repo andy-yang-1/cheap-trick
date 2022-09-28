@@ -1,4 +1,5 @@
 #include "cutlassGemm.h"
+#include "cutlassBestPerf.h"
 #include "v1Gemm.h"
 #include "v2Gemm.h"
 #include "tvmGemm.h"
@@ -29,7 +30,7 @@ void generate_const_2D(float *ptr, int i_M,int i_N,int val){
 }
 
 float get_Gflops(int round, void(*kernel)(int  , int  , int  , 
-                const float*  , const float* , float *, float  , float )){
+                 float*  ,  float* , float *, float  , float )){
     
     int M = 1024;           //M
     int N = 1024;           //N
@@ -105,7 +106,7 @@ float get_Gflops(int round, void(*kernel)(int  , int  , int  ,
 
 // compare with cutlass
 float get_max_error(void(*kernel)(int  , int  , int  , 
-                const float*  , const float* , float *, float  , float )){
+                 float*  ,  float* , float *, float  , float )){
 
     int M = 1024;           //M
     int N = 1024;           //N
@@ -182,9 +183,23 @@ float get_max_error(void(*kernel)(int  , int  , int  ,
         max_err = abs(D[i]-C[i]) > max_err ? abs(D[i]-C[i]) : max_err ;
     }
 
-    // // debug
+    // //  debug
     // cout << "debug: C[0]: "  << C[0] << " C[1024]: " << C[1024] << endl ;
     // cout << "debug: D[0]: "  << D[0] << " D[1024]: " << D[1024] << endl ;
     
     return max_err ;
 }
+
+
+void debug_gemm(void(*kernel)(int  , int  , int  , 
+                 float*  ,  float* , float *, float  , float )){
+
+    
+
+
+
+
+
+
+
+                 }
