@@ -12,3 +12,9 @@ run:
 
 clean:
 	rm test
+
+debug:
+	nvcc -I ../../cutlassBenchmark/cutlass/include/ benchmark/debug.cu -o test
+	./test
+	rm test
+
