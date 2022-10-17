@@ -57,6 +57,14 @@ int main(){
     cout << "rounds: " << round << endl ;
     cout << "average gflops: " << flops << endl ;
 
+    cout << "<--------------------v4gemm------------------>" << endl ;
+
+    flops = get_Gflops(round,run_v4gemm) ;
+    max_err = get_max_error(run_v4gemm,true) ;
+    cout << "max error: " << max_err << endl ;
+    cout << "rounds: " << round << endl ;
+    cout << "average gflops: " << flops << endl ;
+
     cout << "<-----------------end---------------->" << endl ;
 
     // test err

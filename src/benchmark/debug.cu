@@ -11,8 +11,8 @@ int main(){
     int N = 1024;           //N
     int K = 1024;           //K
 
-    float alpha = 1.0;      //alpha
-    float beta = 0;       //beta
+    float alpha = 10;      //alpha
+    float beta = 10.0;       //beta
 
     float *A;               //申明A矩阵host端指针
     float *B;               //申明B矩阵host端指针
@@ -41,10 +41,10 @@ int main(){
     cudaMalloc((void**)&d_C, C_mem_size);  // device端为C矩阵分配内存
     cudaMalloc((void**)&d_D, D_mem_size);  // device端为D矩阵分配内存
 
-    generate_tensor_2D(A, M, K);     // 填充A矩阵
-    generate_tensor_2D(B, K, N);     // 填充B矩阵  
-    // generate_const_2D(A,M,K,1) ;
-    // generate_const_2D(B,K,N,1) ;
+    // generate_tensor_2D(A, M, K);     // 填充A矩阵
+    // generate_tensor_2D(B, K, N);     // 填充B矩阵  
+    generate_const_2D(A,M,K,1) ;
+    generate_const_2D(B,K,N,1) ;
 
     cudaMemcpy(d_A, A, A_mem_size, cudaMemcpyHostToDevice); // 将矩阵A的数据传递到device端
     cudaMemcpy(d_B, B, B_mem_size, cudaMemcpyHostToDevice); // 将矩阵B的数据传递到device端
@@ -75,7 +75,10 @@ int main(){
             
     }
 
-    cout << max_err << endl ;
-    // cout << C[0] << endl << C[1024] << endl ;
+    cout << "max error: " << max_err << endl ;
+    cout << "v4: " <<endl ;
+    cout << C[0] << endl << C[1024] << endl ;
+    cout << "cutlass: " << endl ;
+    cout << D[0] << endl << D[1024] << endl ;
 
 }

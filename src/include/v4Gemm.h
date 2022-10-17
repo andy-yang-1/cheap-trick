@@ -1,7 +1,7 @@
 
 __global__ void mySgemmV3Aligned(
     float * __restrict__ a, float * __restrict__ b, float * __restrict__ c,
-    const int M, const int N, const int K) {
+    const int M, const int N, const int K, const float alpha, const float beta) {
 
     const int BM = 128;
     const int BN = 128;
@@ -22,7 +22,17 @@ __global__ void mySgemmV3Aligned(
     float r_load_b[4];
     float r_comp_a[TM];
     float r_comp_b[TN];
+
     float r_c[TM][TN] = {0.0};
+
+    // #pragma unroll
+    // for (int i = 0 ; i < TM ; i++){
+    //     #pragma unroll
+    //     for (int j = 0 ; j < TN ; j++){
+    //         r_c[i][j] = beta ;
+    //     }
+    // }
+    
 
     int load_a_smem_m = tid >> 1;
     int load_a_smem_k = (tid & 1) << 2;
@@ -48,6 +58,8 @@ __global__ void mySgemmV3Aligned(
     }
 
     for (int bk = 1; bk < (K + BK - 1) / BK; bk++) {
+
+        __syncthreads();
 
         int smem_sel = (bk - 1) & 1;
         int smem_sel_next = bk & 1;
@@ -81,11 +93,15 @@ __global__ void mySgemmV3Aligned(
         s_a[smem_sel_next][load_a_smem_k + 3][load_a_smem_m] = r_load_a[3];
         FLOAT4(s_b[smem_sel_next][load_b_smem_k][load_b_smem_n]) = FLOAT4(r_load_b[0]);
 
-        __syncthreads();
+        // __syncthreads();
     }
+
+    __syncthreads();
 
     #pragma unroll
     for (int tk = 0; tk < BK; tk++) {
+
+        // todo the 1 here is not obvious need to be fixed
         FLOAT4(r_comp_a[0]) = FLOAT4(s_a[1][tk][ty * TM / 2         ]);
         FLOAT4(r_comp_a[4]) = FLOAT4(s_a[1][tk][ty * TM / 2 + BM / 2]);
         FLOAT4(r_comp_b[0]) = FLOAT4(s_b[1][tk][tx * TN / 2         ]);
@@ -99,6 +115,16 @@ __global__ void mySgemmV3Aligned(
             }
         }
     }
+
+    // #pragma unroll
+    for (int i = 0 ; i < TM ; i++){
+        // #pragma unroll
+        for (int j = 0 ; j < TN ; j++){
+            r_c[i][j] = beta + r_c[i][j] * alpha ;
+        }
+    }
+
+
 
     #pragma unroll
     for (int i = 0; i < TM / 2; i++) {
@@ -126,7 +152,7 @@ void run_v4gemm(int M , int N , int K ,
         dim3 blockDim(BN / TN, BM / TM);
         dim3 gridDim((N + BN - 1) / BN, (M + BM - 1) / BM);
 
-        mySgemmV3Aligned<<<gridDim, blockDim>>>(A,B,C,M,N,K);
+        mySgemmV3Aligned<<<gridDim, blockDim>>>(A,B,C,M,N,K,alpha,beta);
 
 
 }
