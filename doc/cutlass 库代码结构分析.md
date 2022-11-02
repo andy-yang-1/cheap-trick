@@ -82,7 +82,7 @@
 
   ![image-20220920090217876](img/cutlass_structure.png)
 
-  ![image-20220920094832318](C:\Users\andy_yang\AppData\Roaming\Typora\typora-user-images\image-20220920094832318.png)
+  ![image-20220920094832318](img/cutlass_structure2.png)
 
 
 
