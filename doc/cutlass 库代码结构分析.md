@@ -22,7 +22,7 @@
 
 - illustration
 
-  <img src="C:\Users\andy_yang\Desktop\small_project\cheap-trick\doc\img\iteration_implement.png" alt="image-20220821112111516" style="zoom:30%;" />
+  <img src="img/iteration_implement.png" alt="image-20220821112111516" style="zoom:30%;" />
   
   <img src="img/iteration_2.png" alt="image-20220821112128328" style="zoom:30%;" />
   
@@ -52,7 +52,7 @@
   		compute in read_REG
   ~~~
 
-  <img src="C:\Users\andy_yang\Desktop\small_project\cheap-trick\doc\img\double_buffer_structure.png" alt="image-20220821112919883" style="zoom:30%;" />
+  <img src="img/double_buffer_structure.png" alt="image-20220821112919883" style="zoom:30%;" />
 
   
 
