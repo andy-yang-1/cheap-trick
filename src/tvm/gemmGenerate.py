@@ -1,7 +1,7 @@
 import tvm
 from tvm.ir.module import IRModule
-from tvm.script import tir as T, relax as R
-from tvm import relax
+from tvm.script import tir as T
+# from tvm import relax
 import numpy as np
 from tvm import te
 
