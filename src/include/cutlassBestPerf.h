@@ -3,7 +3,7 @@
 using CutlassBestPerf = cutlass::gemm::device::Gemm<float,
                                                 ColumnMajor,
                                                 float,
-                                                ColumnMajor,
+                                                RowMajor,
                                                 float,
                                                 RowMajor,
                                                 float

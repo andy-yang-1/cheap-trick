@@ -1,6 +1,4 @@
 
-
-
 #ifdef _WIN32
   using uint = unsigned int;
   using uchar = unsigned char;
@@ -14,7 +12,7 @@
   #define int64_t long long
   #define uint64_t unsigned long long
 #endif
-extern "C" __global__ void __launch_bounds__(256) tvmGenerateV5(float* __restrict__ A, float* __restrict__ B, float* __restrict__ Y) {
+extern "C" __global__ void __launch_bounds__(256) mm_kernel0(float* __restrict__ A, float* __restrict__ B, float* __restrict__ Y) {
   float Y_local[64];
   float4 A_local[1];
   float4 B_local[32];
@@ -202,16 +200,3 @@ extern "C" __global__ void __launch_bounds__(256) tvmGenerateV5(float* __restric
 }
 
 
-void run_v5gemm(int M , int N , int K , 
-                float* A , float* B, float *C, float alpha , float beta){
-
-
-        const int BM = 128, BN = 128, TM = 8, TN = 8;
-        dim3 blockDim(BN / TN, BM / TM);
-        dim3 gridDim((N + BN - 1) / BN, (M + BM - 1) / BM);
-
-        tvmGenerateV5<<<gridDim, blockDim>>>(A,B,C);
-        // tvmGenerateV5<<<64,256>>>(A,B,C);
-
-
-}

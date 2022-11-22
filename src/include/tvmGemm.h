@@ -80,6 +80,8 @@ extern "C" __global__ void __launch_bounds__(64) main_kernel0( float* __restrict
   C_local[59] = 0.000000e+00f;
   C_local[62] = 0.000000e+00f;
   C_local[63] = 0.000000e+00f;
+
+  
   for (int k_0 = 0; k_0 < 32; ++k_0) {
     __syncthreads();
     *(float4*)(A_shared + (((int)threadIdx.x) * 4)) = *(float4*)(A + (((((((int)blockIdx.x) >> 4) * 65536) + ((((int)threadIdx.x) >> 3) * 1024)) + (k_0 * 32)) + ((((int)threadIdx.x) & 7) * 4)));

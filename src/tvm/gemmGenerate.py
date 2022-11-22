@@ -97,8 +97,8 @@ ax0 = sch.get_loops(block=B_local_block)[-1]
 i , j = sch.split(loop=ax0,factors=[2,4])
 
 # avoid bank conflict
-sch.transform_layout(block=B_local_block,buffer=("read",0),index_map= lambda i,j:(  i , ((j//128)*128+(j%128)//8*4+(j%8)//4*64+j%4)))
-sch.transform_layout(block=A_local_block,buffer=("read",0),index_map= lambda j,i:( j , ((i//128)*128+(i%128)//8*4+(i%8)//4*64+i%4) ))
+sch.transform_layout(block=B_local_block,buffer=("read",0),index_map= lambda i,j:( i , ((j//128)*128+(j%128)//8*4+(j%8)//4*64+j%4)))
+sch.transform_layout(block=A_local_block,buffer=("read",0),index_map= lambda j,i:( j , ((i//128)*128+(i%128)//8*4+(i%8)//4*64+i%4)))
 
 # unroll
 ax0 = sch.get_loops(block=A_local_block)[-1]
@@ -134,6 +134,8 @@ sch.annotate(block_or_loop=B_shared_block,ann_key="double_buffer_scope",ann_val=
 ax0 = sch.get_loops(block=A_shared_block)[-4]
 sch.annotate(block_or_loop=ax0,ann_key="software_pipeline_stage",ann_val=[0,0,0,0,1])
 sch.annotate(block_or_loop=ax0,ann_key="software_pipeline_order",ann_val=[0,3,1,4,2])
+
+# print(sch.mod.script())
 
 rt_mod = tvm.build(sch.mod,target="cuda")
 print(rt_mod.imported_modules[0].get_source())
