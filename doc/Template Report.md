@@ -31,16 +31,30 @@
 
 #### Regular Shape Performance
 
-|        shape         |    cutlass     |     tvmGen     |
-| :------------------: | :------------: | :------------: |
-|  M=512 N=512 K=512   | 4214.23 GFLOPS | 8283.59 GFLOPS |
-| M=1024 N=1024 K=1024 | 17250.7 GFLOPS | 17995.6 GFLOPS |
-| M=2048 N=2048 K=2048 | 16352.4 GFLOPS | 17472.0 GFLOPS |
-| M=3072 N=3072 K=3072 | 16224.3 GFLOPS | 16374.9 GFLOPS |
-| M=4096 N=4096 K=4096 | 14899.7 GFLOPS | 16946.7 GFLOPS |
-| M=8192 N=8192 K=8192 | 12008.5 GFLOPS | 18311.4 GFLOPS |
+|        shape         |    cutlass     |     tvmGen     |     cublas     |
+| :------------------: | :------------: | :------------: | :------------: |
+|  M=512 N=512 K=512   | 4214.23 GFLOPS | 8283.59 GFLOPS | 9250.4 GFLOPS  |
+| M=1024 N=1024 K=1024 | 17250.7 GFLOPS | 17995.6 GFLOPS | 16519.5 GFLOPS |
+| M=2048 N=2048 K=2048 | 16352.4 GFLOPS | 17472.0 GFLOPS | 18628.0 GFLOPS |
+| M=3072 N=3072 K=3072 | 16224.3 GFLOPS | 16374.9 GFLOPS | 14639.9 GFLOPS |
+| M=4096 N=4096 K=4096 | 14899.7 GFLOPS | 16946.7 GFLOPS | 17569.2 GFLOPS |
+| M=8192 N=8192 K=8192 | 12008.5 GFLOPS | 18311.4 GFLOPS | 16777.4 GFLOPS |
 
 _Notes: This test uses the cuda measure, which will be slower than the actual speed. Taking M=N=K=1024 as an example, the actual speed can reach 19278 GFLOPS (given by the tvm test)._
+
+|        shape         | tvm(past) | cutlass | tvmGen  |
+| :------------------: | :-------: | :-----: | :-----: |
+| M=1024 N=1024 K=1024 |  5018.13  | 5411.47 | 5023.29 |
+| M=2048 N=2048 K=2048 |  6866.83  | 6437.97 | 7266.32 |
+|                      |           |         |         |
+|                      |           |         |         |
+|                      |           |         |         |
+|                      |           |         |         |
+|                      |           |         |         |
+|                      |           |         |         |
+|                      |           |         |         |
+
+
 
 #### Irregular Shape Performance
 
@@ -51,6 +65,20 @@ _Notes: This test uses the cuda measure, which will be slower than the actual sp
 - without padding
 
   This strategy performs very poorly compared to the padding-enabled part. It is not possible to align cutlass, but only perform slightly better than the existing tvm gemm.
+
+|        shape         | tvm(past) | cutlass | tvmGen  |
+| :------------------: | :-------: | :-----: | :-----: |
+| M=1000 N=2000 K=3000 |  13868.8  | 16540.2 | 16094.3 |
+| M=2040 N=1640 K=1440 |  13007.1  | 13825.8 | 13807.5 |
+|                      |           |         |         |
+|                      |           |         |         |
+|                      |           |         |         |
+|                      |           |         |         |
+|                      |           |         |         |
+|                      |           |         |         |
+|                      |           |         |         |
+
+
 
 
 

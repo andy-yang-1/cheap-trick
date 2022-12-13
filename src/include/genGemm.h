@@ -5,11 +5,13 @@ void run_genGemm(int M , int N , int K ,
 
 
         const int BM = 128, BN = 128, TM = 8, TN = 8;
-        dim3 blockDim(32, 16);
-        dim3 gridDim(16, 32);
+
+        dim3 gridDim(10, 5);
+        dim3 blockDim(10, 25);
+        
 
         mm_kernel0<<<gridDim, blockDim>>>(A,B,C);
-        // tvmGenerateV5<<<64,256>>>(A,B,C);
+        // mm_kernel0<<<200,125>>>(A,B,C);
 
 
 }

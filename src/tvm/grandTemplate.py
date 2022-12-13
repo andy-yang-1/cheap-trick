@@ -1,3 +1,4 @@
+# change for general structure
 import sys
 import tvm
 from tvm import meta_schedule as ms
@@ -158,7 +159,9 @@ def stochastic_schedule(sch: tvm.tir.Schedule):
     
     return sch
     
-
+    
+    
+    
 M = int(sys.argv[1])
 N = int(sys.argv[2])
 K = int(sys.argv[3]) 
@@ -244,20 +247,3 @@ time = time_f(a_tvm, b_tvm, c_tvm).mean
 
 flop = M * N * K * 2
 print("GFLOPS: %.2f" % (flop / time / 1e9))
-
-
-
-# TODO notice padding's insertation and change index
-# inst0 = sch.trace.insts[9]
-# inst1 = sch.trace.insts[10]
-# inst2 = sch.trace.insts[11]
-
-# bx , tx , tm = sch.trace.decisions.get(inst0)
-# by , ty , tn = sch.trace.decisions.get(inst1)
-# bk , tk = sch.trace.decisions.get(inst2)
-# print("Hyperparas:")
-# print(by,bx,ty,tx,bk,tk,tm,tn)
-
-
-
-    

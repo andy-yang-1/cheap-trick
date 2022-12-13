@@ -281,7 +281,7 @@ float get_dynamic_max_error(int M, int N, int K, float alpha, float beta, void(*
     size_t A_mem_size = sizeof(float) * M * K; //memory size of matrix A = M * K * sizeof(float)
     size_t B_mem_size = sizeof(float) * K * N; //memory size of matrix B = K * N * sizeof(float)
     size_t C_mem_size = sizeof(float) * M * N; //memory size of matrix C = M * N * sizeof(float)
-    size_t D_mem_size = sizeof(float) * M * N; //memory size of matrix C = M * N * sizeof(float)
+    size_t D_mem_size = sizeof(float) * M * N; //memory size of matrix D = M * N * sizeof(float)
  
     A = (float*)malloc(A_mem_size);  // host端A矩阵分配内存
     B = (float*)malloc(B_mem_size);  // host端B矩阵分配内存
@@ -304,10 +304,14 @@ float get_dynamic_max_error(int M, int N, int K, float alpha, float beta, void(*
     generate_tensor_2D(B, K, N);     // 填充B矩阵  
     // generate_const_2D(A,M,K,1) ;
     // generate_const_2D(B,K,N,1) ;
+    generate_const_2D(C,M,N,0);
+    generate_const_2D(D,M,N,0);
 
 
     cudaMemcpy(d_A, A, A_mem_size, cudaMemcpyHostToDevice); // 将矩阵A的数据传递到device端
     cudaMemcpy(d_B, B, B_mem_size, cudaMemcpyHostToDevice); // 将矩阵B的数据传递到device端
+    cudaMemcpy(d_C, C, C_mem_size, cudaMemcpyHostToDevice); // 将矩阵C的数据传递到device端
+    cudaMemcpy(d_D, D, D_mem_size, cudaMemcpyHostToDevice); // 将矩阵D的数据传递到device端
     
 
     int lda = K;
@@ -318,14 +322,16 @@ float get_dynamic_max_error(int M, int N, int K, float alpha, float beta, void(*
 
 
     if (isRowMajor){
-        run_cutlass(M,N,K,d_A,d_B,d_C,alpha,beta) ;
+        // run_cutlass(M,N,K,d_A,d_B,d_C,alpha,beta) ;
+        run_cutlass(M,N,K,d_A,d_B,d_D,alpha,beta) ;
     }else{
         run_bestPerf(M,N,K,d_A,d_B,d_C,alpha,beta) ;
     }
     
 
 
-    kernel(M,N,K,d_A,d_B,d_D,alpha,beta) ;
+    // kernel(M,N,K,d_A,d_B,d_D,alpha,beta) ;
+    kernel(M,N,K,d_A,d_B,d_C,alpha,beta) ;
 
     cudaMemcpy(D,d_D,D_mem_size,cudaMemcpyDeviceToHost) ;
     cudaMemcpy(C,d_C,C_mem_size,cudaMemcpyDeviceToHost) ;
