@@ -6,14 +6,21 @@
 #include "v4Gemm.h"
 #include "v5Gemm.h"
 #include "tvmGemm.h"
+#include "paddingGemm.h"
 
 
 #include <iostream>
 #include <cmath>
 
+
+// #define debug
+
+
 using std::cin ;
 using std::cout ;
 using std::endl ;
+
+const int warmup_iterations = 0;
 
 
 void generate_tensor_2D(float *ptr, int i_M, int i_N){        // 二维矩阵填充函数（此处全部填充1）
@@ -77,11 +84,16 @@ float get_Gflops(int round, void(*kernel)(int  , int  , int  ,
     cudaMemcpy(d_B, B, B_mem_size, cudaMemcpyHostToDevice); // 将矩阵B的数据传递到device端
     cudaMemcpy(d_C, C, C_mem_size, cudaMemcpyHostToDevice); // 将矩阵C的数据传递到device端
 
+    // warm up the gpu
+    for (int i = 0 ;  i < warmup_iterations ; i++){
+        kernel(M,N,K,d_A,d_B,d_C,alpha,beta) ;
+    }
 
     cudaEvent_t start , stop ; // declare time stamp
     cudaEventCreate(&start) ; // start to record
     cudaEventCreate(&stop) ;
     cudaEventRecord(start,0) ; // record the time
+
 
     for (int i = 0 ;  i < round ; i++){
 
@@ -100,11 +112,28 @@ float get_Gflops(int round, void(*kernel)(int  , int  , int  ,
     cudaEventDestroy(start) ; // destroy the events 
     cudaEventDestroy(stop) ;
 
-    flops = 2.0 * M * N * K / 1024 / 1024 / 1024 / whole_time * 1000 * round ;
-    // flops = (2.0 * M * N * K + 2 * M * N) / 1000 / 1000 / 1000 / whole_time * 1000 * round ;
+    // flops = 2.0 * M * N * K / 1024 / 1024 / 1024 / whole_time * 1000 * round ;
+    flops = (2.0 * M * N * K + 2 * M * N) / 1000 / 1000 / 1000 / whole_time * 1000 * round ;
 
     return flops ;
 
+
+}
+
+
+// write the matrix into file
+void write_2D_matrix(float *matrix, int M, int N, char *filename){
+
+    FILE *fp = fopen(filename, "w");
+
+    for (int i = 0 ; i < M ; i++){
+        for (int j = 0 ; j < N ; j++){
+            fprintf(fp, "%f ", matrix[i * N + j]);
+        }
+        fprintf(fp, "\n");
+    }
+
+    fclose(fp);
 
 }
 
@@ -183,6 +212,14 @@ float get_max_error(void(*kernel)(int  , int  , int  ,
     for (int i = 0 ; i < M * N ; i++){
 
         max_err = abs(D[i]-C[i]) > max_err ? abs(D[i]-C[i]) : max_err ;
+
+#ifdef debug
+        if (abs(D[i]-C[i]) > 0.0001){
+            cout << "debug: D[" << i << "]: " << D[i] << " C[" << i << "]: " << C[i] << endl ;
+        }
+#endif 
+
+
     }
 
     // //  debug
@@ -231,6 +268,12 @@ float get_dynamic_Gflops(int round, int M, int N, int K, float alpha, float beta
     cudaMemcpy(d_C, C, C_mem_size, cudaMemcpyHostToDevice); // 将矩阵C的数据传递到device端
 
 
+    // warm up the gpu
+    for (int i = 0 ;  i < warmup_iterations ; i++){
+        kernel(M,N,K,d_A,d_B,d_C,alpha,beta) ;
+    }
+
+
     cudaEvent_t start , stop ; // declare time stamp
     cudaEventCreate(&start) ; // start to record
     cudaEventCreate(&stop) ;
@@ -253,8 +296,8 @@ float get_dynamic_Gflops(int round, int M, int N, int K, float alpha, float beta
     cudaEventDestroy(start) ; // destroy the events 
     cudaEventDestroy(stop) ;
 
-    flops = 2.0 * M * N * K / 1024 / 1024 / 1024 / whole_time * 1000 * round ;
-    // flops = (2.0 * M * N * K + 2 * M * N) / 1000 / 1000 / 1000 / whole_time * 1000 * round ;
+    // flops = 2.0 * M * N * K / 1024 / 1024 / 1024 / whole_time * 1000 * round ;
+    flops = (2.0 * M * N * K + 2 * M * N) / 1000 / 1000 / 1000 / whole_time * 1000 * round ;
 
     return flops ;
 
@@ -302,8 +345,10 @@ float get_dynamic_max_error(int M, int N, int K, float alpha, float beta, void(*
 
     generate_tensor_2D(A, M, K);     // 填充A矩阵
     generate_tensor_2D(B, K, N);     // 填充B矩阵  
-    // generate_const_2D(A,M,K,1) ;
-    // generate_const_2D(B,K,N,1) ;
+#ifdef debug
+    generate_const_2D(A,M,K,1) ;
+    generate_const_2D(B,K,N,1) ;
+#endif
     generate_const_2D(C,M,N,0);
     generate_const_2D(D,M,N,0);
 
@@ -341,11 +386,24 @@ float get_dynamic_max_error(int M, int N, int K, float alpha, float beta, void(*
     for (int i = 0 ; i < M * N ; i++){
 
         max_err = abs(D[i]-C[i]) > max_err ? abs(D[i]-C[i]) : max_err ;
+
+#ifdef debug
+        if (abs(D[i]-C[i]) > 0.0001){
+            cout << "debug: D[" << i << "]: " << D[i] << " C[" << i << "]: " << C[i] << endl ;
+            cout << "row: " << i / N << " col: " << i % N << endl ;
+            break;
+        }
+        
+#endif 
+
     }
 
-    // //  debug
-    // cout << "debug: C[0]: "  << C[0] << " C[1024]: " << C[1024] << endl ;
-    // cout << "debug: D[0]: "  << D[0] << " D[1024]: " << D[1024] << endl ;
+#ifdef debug
+    cout << "debug: C[0]: "  << C[0] << " C[1024]: " << C[1024] << endl ;
+    cout << "debug: D[0]: "  << D[0] << " D[1024]: " << D[1024] << endl ;
+
+    write_2D_matrix(C,M,N,"out.txt") ;
+#endif
     
     return max_err ;
 }

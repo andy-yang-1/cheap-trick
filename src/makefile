@@ -35,4 +35,4 @@ multistage:
 	rm test
 
 gdb-build:
-	nvcc -g -I ../../cutlassBenchmark/cutlass/include/ benchmark/main.cu -o test
+	nvcc -g -G -I ../../cutlassBenchmark/cutlass/include/ benchmark/debug.cu -o test

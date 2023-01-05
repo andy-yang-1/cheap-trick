@@ -8,8 +8,8 @@ int main(){
     float flops , max_err ;
     int round = 1 ;
 
-    int M = 1000 , N = 2000 , K = 3000 ;
-    // int M = 2000 , N = 2024 , K = 2024 ;
+    int M = 1009 , N = 1009 , K = 1009 ;
+    // int M = 1024 , N = 1024 , K = 1024 ;
 
     cout << "M: " << M << endl << "N: " << N << endl << "K: " << K << endl ;
 
@@ -26,8 +26,10 @@ int main(){
 
     cout << "<--------------------genGemm------------------>" << endl ;
 
-    max_err = get_dynamic_max_error(M,N,K,alpha,beta,run_genGemm,true);
-    flops = get_dynamic_Gflops(round,M,N,K,alpha,beta,run_genGemm);
+    max_err = get_dynamic_max_error(M,N,K,alpha,beta,run_paddinggemm,true);
+    flops = get_dynamic_Gflops(round,M,N,K,alpha,beta,run_paddinggemm);
+    // max_err = get_dynamic_max_error(M,N,K,alpha,beta,run_v4gemm,true);
+    // flops = get_dynamic_Gflops(round,M,N,K,alpha,beta,run_v4gemm);
     cout << "max error: " << max_err << endl ;
     cout << "rounds: " << round << endl ;
     cout << "average gflops: " << flops << endl ;
